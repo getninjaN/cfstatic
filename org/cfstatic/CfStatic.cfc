@@ -142,6 +142,7 @@
 		<cfargument name="jsDependencyFile"      type="string"  required="false" default=""          hint="Text file describing the dependencies between javascript files" />
 		<cfargument name="cssDependencyFile"     type="string"  required="false" default=""          hint="Text file describing the dependencies between css files" />
 		<cfargument name="throwOnMissingInclude" type="boolean" required="false" default="false"     hint="Whether or not to throw an error by default when the include() method is passed a resource that does not exist. The default is false (no error will be thrown)" />
+		<cfargument name="renderPath"	 		 type="string"  required="false" default=""     	 hint="Buster" />
 
 		<cfscript>
 			var rootDir = $normalizeUnixAndWindowsPaths( $ensureFullDirectoryPath( staticDirectory ) );
@@ -153,6 +154,7 @@
 			_setJsUrl                ( $listAppend(staticUrl, jsDirectory    , '/') );
 			_setCssUrl               ( $listAppend(staticUrl, cssDirectory   , '/') );
 			_setMinifiedUrl          ( $listAppend(staticUrl, outputDirectory, '/') );
+			_setRenderPath			 ( renderPath                                   );// Buster
 			_setMinifyMode           ( minifyMode                                   );
 			_setDownloadExternals    ( downloadExternals                            );
 			_setDebugAllowed         ( debugAllowed                                 );
@@ -185,8 +187,8 @@
 			_compileLess();
 			_compileCoffeeScript();
 
-			_setJsPackages ( _packageDirectory( jsDir , _getJsUrl() , _getMinifiedUrl(), 'js' , _getDependenciesFromFile( 'js'  ) ) );
-			_setCssPackages( _packageDirectory( cssDir, _getCssUrl(), _getMinifiedUrl(), 'css', _getDependenciesFromFile( 'css' ) ) );
+			_setJsPackages ( _packageDirectory( jsDir , _getJsUrl() , _getRenderPath(), 'js' , _getDependenciesFromFile( 'js'  ) ) );
+			_setCssPackages( _packageDirectory( cssDir, _getCssUrl(), _getRenderPath(), 'css', _getDependenciesFromFile( 'css' ) ) );
 
 			_cacheRenderedIncludes();
 			_cacheIncludeMappings();
@@ -1113,6 +1115,19 @@
 	</cffunction>
 	<cffunction name="_getMinifiedUrl" access="private" returntype="string" output="false">
 		<cfreturn _minifiedUrl />
+	</cffunction>
+
+	<!--- Buster --->
+	<cffunction name="_setRenderPath" access="private" returntype="void" output="false">
+		<cfargument name="renderPath" required="true" type="string" />
+		<cfif Len(Trim(renderPath)) GT 0>
+			<cfset _renderPath = renderPath />
+		<cfelse>
+			<cfset _renderPath = _getMinifiedUrl() />
+		</cfif>
+	</cffunction>
+	<cffunction name="_getRenderPath" access="private" returntype="string" output="false">
+		<cfreturn _renderPath />
 	</cffunction>
 
 	<cffunction name="_setMinifyMode" access="private" returntype="void" output="false">

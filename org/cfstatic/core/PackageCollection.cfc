@@ -5,6 +5,7 @@
 		_rootDirectory	= "";
 		_rootUrl		= "";
 		_minifiedUrl	= "";
+		_renderPath     = ""; // Buster
 		_fileType		= "";
 		_packages		= StructNew();
 		_ordered		= ArrayNew(1);
